@@ -1,0 +1,22 @@
+# mongoDB
+http://askubuntu.com/questions/745731/cannot-start-mongod-service-on-ubuntu-15-10
+
+# Set the airflow home
+export AIRFLOW_HOME=~/airflow
+
+# system dependencies
+sudo apt-get install build-essential libssl-dev libffi-dev python-dev
+sudo apt-get install postgresql python-psycopg2 libpq-dev
+
+# Install from pypi using pip
+pip install airflow
+
+# Install necessary sub-packages
+pip install airflow[crypto] # For connection credentials protection
+pip install airflow[postgres] # For PostgreSQL DBs
+pip install airflow[celery] # For distributed mode: celery executor
+pip install airflow[rabbitmq] # For message queuing and passing between airflow server and workers
+... # Anything more you need
+
+# Configure airflow: modify AIRFLOW_HOME/airflow.cfg if necessary
+# For the standalone mode, we will leave the configuration to default
