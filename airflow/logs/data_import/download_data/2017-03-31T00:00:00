@@ -1,0 +1,17 @@
+[2017-04-29 12:56:14,115] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:15,164] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:15,210] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 12:56:15,314] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-03-31 00:00:00
+[2017-04-29 12:56:15,323] {models.py:1286} ERROR - download_data() got an unexpected keyword argument 'yesterday_ds_nodash'
+Traceback (most recent call last):
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/models.py", line 1245, in run
+    result = task_copy.execute(context=context)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/operators/python_operator.py", line 66, in execute
+    return_value = self.python_callable(*self.op_args, **self.op_kwargs)
+TypeError: download_data() got an unexpected keyword argument 'yesterday_ds_nodash'
+[2017-04-29 12:56:15,324] {models.py:1306} INFO - Marking task as FAILED.
+[2017-04-29 12:56:15,435] {models.py:1327} ERROR - download_data() got an unexpected keyword argument 'yesterday_ds_nodash'

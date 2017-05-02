@@ -1,0 +1,40 @@
+[2017-04-29 12:56:21,304] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:22,375] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:22,420] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 12:56:22,520] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-04-07 00:00:00
+[2017-04-29 12:56:22,527] {models.py:1286} ERROR - download_data() got an unexpected keyword argument 'test_mode'
+Traceback (most recent call last):
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/models.py", line 1245, in run
+    result = task_copy.execute(context=context)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/operators/python_operator.py", line 66, in execute
+    return_value = self.python_callable(*self.op_args, **self.op_kwargs)
+TypeError: download_data() got an unexpected keyword argument 'test_mode'
+[2017-04-29 12:56:22,529] {models.py:1306} INFO - Marking task as FAILED.
+[2017-04-29 12:56:22,642] {models.py:1327} ERROR - download_data() got an unexpected keyword argument 'test_mode'
+[2017-04-29 13:01:07,898] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:01:08,944] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:01:08,990] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 13:01:09,114] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-04-07 00:00:00
+[2017-04-29 13:01:09,580] {download_data.py:32} INFO - got player details
+[2017-04-29 13:03:13,662] {download_data.py:36} INFO - 100
+[2017-04-29 13:05:18,926] {download_data.py:36} INFO - 200
+[2017-04-29 13:07:23,475] {download_data.py:36} INFO - 300
+[2017-04-29 13:07:26,973] {models.py:1286} ERROR - 
+Traceback (most recent call last):
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/models.py", line 1245, in run
+    result = task_copy.execute(context=context)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/operators/python_operator.py", line 66, in execute
+    return_value = self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/home/alpha/fantasy_football/airflow/dags/download_data.py", line 42, in download_data
+    time.sleep(1)
+KeyboardInterrupt
+[2017-04-29 13:07:26,975] {models.py:1306} INFO - Marking task as FAILED.
+[2017-04-29 13:07:27,080] {models.py:1327} ERROR - 

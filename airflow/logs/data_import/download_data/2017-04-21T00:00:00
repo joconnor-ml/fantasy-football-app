@@ -1,0 +1,17 @@
+[2017-04-29 12:56:35,705] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:36,749] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:36,813] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 12:56:36,923] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-04-21 00:00:00
+[2017-04-29 12:56:36,931] {models.py:1286} ERROR - download_data() missing 1 required positional argument: 'schedule_interval'
+Traceback (most recent call last):
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/models.py", line 1245, in run
+    result = task_copy.execute(context=context)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/operators/python_operator.py", line 66, in execute
+    return_value = self.python_callable(*self.op_args, **self.op_kwargs)
+TypeError: download_data() missing 1 required positional argument: 'schedule_interval'
+[2017-04-29 12:56:36,932] {models.py:1306} INFO - Marking task as FAILED.
+[2017-04-29 12:56:37,044] {models.py:1327} ERROR - download_data() missing 1 required positional argument: 'schedule_interval'

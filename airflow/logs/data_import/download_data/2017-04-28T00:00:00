@@ -1,0 +1,109 @@
+[2017-04-29 12:56:08,919] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags
+[2017-04-29 12:56:08,959] {base_executor.py:36} INFO - Adding to queue: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:08,965] {sequential_executor.py:26} INFO - Executing command: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:09,819] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:10,838] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:10,884] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 12:56:10,997] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-04-28 00:00:00
+[2017-04-29 12:56:11,005] {models.py:1286} ERROR - download_data() got an unexpected keyword argument 'task_instance_key_str'
+Traceback (most recent call last):
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/models.py", line 1245, in run
+    result = task_copy.execute(context=context)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/operators/python_operator.py", line 66, in execute
+    return_value = self.python_callable(*self.op_args, **self.op_kwargs)
+TypeError: download_data() got an unexpected keyword argument 'task_instance_key_str'
+[2017-04-29 12:56:11,007] {models.py:1306} INFO - Marking task as FAILED.
+[2017-04-29 12:56:11,118] {models.py:1327} ERROR - download_data() got an unexpected keyword argument 'task_instance_key_str'
+[2017-04-29 12:56:28,630] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags
+[2017-04-29 12:56:28,669] {base_executor.py:36} INFO - Adding to queue: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:28,708] {sequential_executor.py:26} INFO - Executing command: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:29,664] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:30,879] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:56:30,926] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 12:56:31,033] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-04-28 00:00:00
+[2017-04-29 12:56:31,041] {models.py:1286} ERROR - download_data() missing 1 required positional argument: 'schedule_interval'
+Traceback (most recent call last):
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/models.py", line 1245, in run
+    result = task_copy.execute(context=context)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/operators/python_operator.py", line 66, in execute
+    return_value = self.python_callable(*self.op_args, **self.op_kwargs)
+TypeError: download_data() missing 1 required positional argument: 'schedule_interval'
+[2017-04-29 12:56:31,043] {models.py:1306} INFO - Marking task as FAILED.
+[2017-04-29 12:56:31,144] {models.py:1327} ERROR - download_data() missing 1 required positional argument: 'schedule_interval'
+[2017-04-29 12:57:35,945] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags
+[2017-04-29 12:57:35,985] {base_executor.py:36} INFO - Adding to queue: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:57:35,990] {sequential_executor.py:26} INFO - Executing command: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:57:36,850] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:57:37,944] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 12:57:37,991] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 12:57:38,134] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-04-28 00:00:00
+[2017-04-29 12:59:55,952] {models.py:1286} ERROR - 
+Traceback (most recent call last):
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/models.py", line 1245, in run
+    result = task_copy.execute(context=context)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/operators/python_operator.py", line 66, in execute
+    return_value = self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/home/alpha/fantasy_football/airflow/dags/download_data.py", line 48, in download_data
+    time.sleep(1)
+KeyboardInterrupt
+[2017-04-29 12:59:55,953] {models.py:1306} INFO - Marking task as FAILED.
+[2017-04-29 12:59:56,113] {models.py:1327} ERROR - 
+[2017-04-29 13:01:48,101] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags
+[2017-04-29 13:01:48,142] {base_executor.py:36} INFO - Adding to queue: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:01:48,147] {sequential_executor.py:26} INFO - Executing command: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:01:49,002] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:01:50,029] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:01:50,075] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 13:01:50,202] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-04-28 00:00:00
+[2017-04-29 13:01:50,343] {models.py:1286} ERROR - upsert must be True or False
+Traceback (most recent call last):
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/models.py", line 1245, in run
+    result = task_copy.execute(context=context)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/airflow/operators/python_operator.py", line 66, in execute
+    return_value = self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/home/alpha/fantasy_football/airflow/dags/download_data.py", line 30, in download_data
+    collection.update({"id": row["id"]}, row, {"upsert": True})
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/pymongo/collection.py", line 2503, in update
+    collation=collation)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/pymongo/collection.py", line 719, in _update
+    common.validate_boolean("upsert", upsert)
+  File "/home/alpha/fantasy_football/.env/lib/python3.5/site-packages/pymongo/common.py", line 133, in validate_boolean
+    raise TypeError("%s must be True or False" % (option,))
+TypeError: upsert must be True or False
+[2017-04-29 13:01:50,346] {models.py:1306} INFO - Marking task as FAILED.
+[2017-04-29 13:01:50,461] {models.py:1327} ERROR - upsert must be True or False
+[2017-04-29 13:03:32,820] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags
+[2017-04-29 13:03:32,859] {base_executor.py:36} INFO - Adding to queue: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:03:32,865] {sequential_executor.py:26} INFO - Executing command: airflow run data_import download_data 2017-04-28T00:00:00 --local -sd /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:03:33,725] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:03:34,767] {models.py:154} INFO - Filling up the DagBag from /home/alpha/fantasy_football/airflow/dags/dags.py
+[2017-04-29 13:03:34,827] {models.py:1196} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 1
+--------------------------------------------------------------------------------
+
+[2017-04-29 13:03:34,929] {models.py:1219} INFO - Executing <Task(PythonOperator): download_data> on 2017-04-28 00:00:00
+[2017-04-29 13:03:36,751] {download_data.py:32} INFO - got player details
+[2017-04-29 13:05:38,864] {download_data.py:36} INFO - 100
+[2017-04-29 13:07:44,042] {download_data.py:36} INFO - 200
+[2017-04-29 13:09:49,111] {download_data.py:36} INFO - 300
+[2017-04-29 13:11:53,386] {download_data.py:36} INFO - 400
+[2017-04-29 13:13:56,500] {download_data.py:36} INFO - 500
+[2017-04-29 13:15:59,675] {download_data.py:36} INFO - 600
+[2017-04-29 13:17:02,179] {python_operator.py:67} INFO - Done. Returned value was: None
