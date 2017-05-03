@@ -3,7 +3,8 @@ from airflow.operators import PythonOperator
 from airflow.models import DAG
 from datetime import datetime, timedelta
 from download_data import download_data
-
+from transform_data import transform_data
+from build_models import build_models
 
 def make_task(func):
     return PythonOperator(
@@ -26,11 +27,7 @@ dag = DAG(
 )
 
 
-def transform_data():
-    pass
-
-
-def build_models():
+def validate_models():
     pass
 
 
@@ -42,9 +39,11 @@ def produce_predictions():
 import_task = make_task(download_data)
 transform_task = make_task(transform_data)
 model_task = make_task(build_models)
+validate_task = make_task(validate_models)
 predict_task = make_task(produce_predictions)
 
 # define dependencies
 transform_task.set_upstream(import_task)
 model_task.set_upstream(transform_task)
+validate_task.set_upstream(transform_task)
 predict_task.set_upstream(model_task)
