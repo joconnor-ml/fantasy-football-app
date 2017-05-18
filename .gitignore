@@ -1,5 +1,8 @@
+airflow/dags/.ipynb_checkpoints
+airflow/airflow-webserver.pid
 *#
 *~
 *.db
 .env/
 *.pyc
+airflow/logs/

@@ -27,11 +27,11 @@ dag = DAG(
 )
 
 
-def validate_models():
+def validate_models(execution_date, **kwargs):
     pass
 
 
-def produce_predictions():
+def produce_predictions(execution_date, **kwargs):
     pass
 
 
