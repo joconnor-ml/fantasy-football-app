@@ -4,6 +4,7 @@ from airflow.models import DAG
 from datetime import datetime, timedelta
 from download_data import download_data
 from transform_data import transform_data
+from validate_models import validate_models
 from build_models import build_models
 
 def make_task(func):
@@ -25,10 +26,6 @@ dag = DAG(
     default_args=args,
     schedule_interval=timedelta(weeks=1),
 )
-
-
-def validate_models(execution_date, **kwargs):
-    pass
 
 
 def produce_predictions(execution_date, **kwargs):

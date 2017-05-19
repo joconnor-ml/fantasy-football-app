@@ -18,18 +18,18 @@ def transform_data(execution_date, **kwargs):
         df = df.reset_index()
         if i == 91: df.to_csv("player_df.csv")
         df.index += df["round"].min()
-        player_df = df[["minutes", "total_points", "was_home"]].astype(np.float64)
+        player_df = df[["minutes", "total_points", "was_home", "opponent_team"]].astype(np.float64)
         #player_df = df.select_dtypes(["number"]).astype(np.float32).drop(["round", "fixture", "value", "selected",
         #                                                                  "loaned_in", "loaned_out", "ea_index",
         #                                                                  "index", "element",
         #                                                                  "transfers_in", "transfers_out", "transfers_balance"], axis=1)
         player_df.loc[:, "appearances"] = (player_df.loc[:, "minutes"] > 0).astype(np.float32)
-        mean3 = player_df.rolling(3).mean()
-        mean10 = player_df.rolling(10).mean()
-        cumulative_sums = player_df.cumsum(axis=0)
+        mean3 = player_df[["total_points", "minutes"]].rolling(3).mean()
+        mean10 = player_df[["total_points", "minutes"]].rolling(10).mean()
+        cumulative_sums = player_df[["appearances", "total_points"]].cumsum(axis=0)
         # normalise by number of games played up to now
-        cumulative_means = cumulative_sums.div(cumulative_sums.loc[:, "appearances"] + 1, axis=0)
-        player_df["id"] = i
+        cumulative_means = cumulative_sums[["total_points"]].div(cumulative_sums.loc[:, "appearances"] + 1, axis=0)
+        player_df["id"] = i + 1
         player_dfs[i] = pd.concat([player_df,
                                    mean3.add_suffix("_mean3"),
                                    mean10.add_suffix("_mean10"),
@@ -51,6 +51,7 @@ def transform_data(execution_date, **kwargs):
     player_panel.loc[:, :, "target"] = sum(player_panel.loc[:, :, "total_points"].shift(-i) for i in range(1, 2))
     player_panel.loc[:, :, "target_minutes"] = sum(player_panel.loc[:, :, "minutes"].shift(-i) for i in range(1, 2))
     player_panel.loc[:, :, "target_home"] = sum(player_panel.loc[:, :, "was_home"].shift(-i) for i in range(1, 2))
+    player_panel.loc[:, :, "target_team"] = sum(player_panel.loc[:, :, "opponent_team"].shift(-i) for i in range(1, 2))
     player_panel.to_pickle("data.pkl")
     player_details.to_csv("player_details.csv")  # store the player names and such so we can inspect them during training/validation
 
