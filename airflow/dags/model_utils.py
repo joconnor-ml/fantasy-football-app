@@ -1,41 +1,52 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression, Lasso, Ridge, LassoCV, RidgeCV
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import Imputer, MinMaxScaler, PolynomialFeatures, OneHotEncoder, FunctionTransformer
 from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import make_pipeline, make_union
+from sklearn.decomposition import PCA
 from xgboost import XGBRegressor
 from sklearn_pandas import DataFrameMapper
 
 import logging
 
-def prepare(df):
-    details = pd.read_csv("player_details.csv",
-                          index_col=0)[["team_code", "web_name", "element_type"]]
-    details.index = details.index.astype(np.float64)
-    df = pd.merge(df, details,
-                  how="left", left_on="id", right_index=True)
+def get_data(test_week, one_hot):
+    df = pd.read_csv("data.csv")
     df.index = df.web_name
     df.to_csv("test_details.csv")
-    df["team_code"] = df["team_code"].fillna(999)
-    df["target_team"] = df["target_team"].fillna(999)
-    df["element_type"] = df["element_type"].fillna(999)
+    if one_hot:
+        opponent_team = pd.get_dummies(df["target_team"].fillna(999).astype(int)).add_prefix("opponent_")
+        own_team = pd.get_dummies(df["team_code"].fillna(999).astype(int)).add_prefix("team_")
+        position = pd.get_dummies(df["element_type"].fillna(999).astype(int)).add_prefix("position_")
+        df = pd.concat([
+            df.drop(["target_team", "team_code", "element_type"], axis=1),
+            opponent_team, own_team, position
+        ], axis=1)
     df = df[df["target_minutes"] > 60]
     y = df["target"]
     X = df.drop(["target", "id", "target_minutes", "web_name"], axis=1).astype(np.float64)
     notnull = y.notnull()
-    return X[notnull], y[notnull]
+    X = X[notnull]
+    y = y[notnull]
+    train = X["gameweek"] < test_week
+    test = X["gameweek"] == test_week
+    return X[train], X[test], y[train], y[test]
 
 models = {
     "xgb":
     XGBRegressor(n_estimators=64, learning_rate=0.1, max_depth=1),
+    "xgb2":
+    XGBRegressor(n_estimators=64, learning_rate=0.1, max_depth=2),
+    "rf":
+    make_pipeline(Imputer(), RandomForestRegressor(n_estimators=100, max_depth=3)),
     "linear":
     make_pipeline(
-        DataFrameMapper([
-            (["team_code", "target_team", "element_type"],
-             OneHotEncoder(sparse=False)),
-        ], default=None),
         Imputer(), MinMaxScaler(), RidgeCV(),
+    ),
+    "polynomial":
+    make_pipeline(
+        Imputer(), PolynomialFeatures(), MinMaxScaler(), PCA(16),  RidgeCV(),
     )
 }

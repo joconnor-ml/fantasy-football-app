@@ -22,9 +22,10 @@ def transform_data(execution_date, **kwargs):
         df = df.reset_index()
         df.index += df["round"].min()
         player_df = df[["minutes", "total_points", "was_home", "opponent_team"]].astype(np.float64)
-        player_df.loc[:, "appearances"] = (player_df.loc[:, "minutes"] > 0).astype(np.float32)
+        player_df.loc[:, "appearances"] = (player_df.loc[:, "minutes"] > 0).astype(np.float64)
         mean3 = player_df[["total_points", "minutes", "appearances"]].rolling(3).mean()
         mean10 = player_df[["total_points", "minutes", "appearances"]].rolling(10).mean()
+        mean5 = player_df[["total_points", "minutes", "appearances"]].rolling(5).mean()
         cumulative_sums = player_df.cumsum(axis=0)
         # normalise by number of games played up to now
         cumulative_means = cumulative_sums[["total_points"]].div(cumulative_sums.loc[:, "appearances"] + 1, axis=0)
@@ -36,22 +37,29 @@ def transform_data(execution_date, **kwargs):
         player_df["target_minutes"] = player_df["minutes"].shift(-1)
         player_df["target_home"] = player_df["was_home"].shift(-1)
         player_df["target_team"] = player_df["opponent_team"].shift(-1)
+        player_df["gameweek"] = player_df.index
 
-        if one_hot:
-            # apply one-hot encoding to categorical variables
-            opponent_team = pd.get_dummies(player_df["target_team"]).add_prefix("opponent_")
-            own_team = pd.get_dummies(player_df["team_code"]).add_prefix("team_")
-            position = pd.get_dummies(player_df["element_type"]).add_prefix("position_")
-            player_df = pd.concat([player_df.drop(["target_team", "team_code", "element_type"], axis=1),
-                                   opponent_team, own_team, position], axis=1)
-
-        player_dfs[i] = pd.concat([player_df,
-                                   mean3.add_suffix("_mean3"),
-                                   mean10.add_suffix("_mean10"),
-                                   cumulative_means.add_suffix("_mean_all")], axis=1)
+        #one_hot = True
         
-    player_panel = pd.Panel(player_dfs)         
-    player_panel.to_pickle("data.pkl")
+        #if one_hot:
+        # apply one-hot encoding to categorical variables
+        #opponent_team = pd.get_dummies(player_df["target_team"]).add_prefix("opponent_")
+        #own_team = pd.get_dummies(player_df["team_code"]).add_prefix("team_")
+        #position = pd.get_dummies(player_df["element_type"]).add_prefix("position_")
+        #player_df = pd.concat([player_df.drop(["target_team", "team_code", "element_type"], axis=1),
+        #                           opponent_team, own_team, position], axis=1)
+
+        player_dfs[i] = pd.concat([
+            player_df,
+            mean3.add_suffix("_mean3"),
+            mean10.add_suffix("_mean10"),
+            mean5.add_suffix("_mean5"),
+            cumulative_means.add_suffix("_mean_all"),
+            cumulative_sums.add_suffix("_sum_all"),
+        ], axis=1)
+        
+    player_df = pd.concat(player_dfs)
+    player_df.to_csv("data.csv")
     #player_details.to_csv("player_details.csv")  # store the player names and such so we can inspect them during training/validation
 
 if __name__ == "__main__":
