@@ -25,7 +25,7 @@ def transform_data(execution_date, **kwargs):
         player_df.loc[:, "appearances"] = (player_df.loc[:, "minutes"] > 0).astype(np.float64)
         mean3 = player_df[["total_points", "minutes", "appearances"]].rolling(3).mean()
         mean10 = player_df[["total_points", "minutes", "appearances"]].rolling(10).mean()
-        std10 = player_df[["total_points", "minutes", "appearances"]].rolling(10).std()
+        std10 = player_df[["total_points"]].rolling(10).std()
         mean5 = player_df[["total_points", "minutes", "appearances"]].rolling(5).mean()
         ewma = player_df[["total_points", "minutes", "appearances"]].ewm(halflife=10).mean()
         cumulative_sums = player_df.cumsum(axis=0)
@@ -69,10 +69,17 @@ def transform_data(execution_date, **kwargs):
     player_df.to_csv("data.csv")
 
     team_data = player_df.groupby(["team_code", "gameweek"]).sum()
+    # TODO turn this into a panel so we can cumsum up the gameweeks
     team_data.to_csv("team_data.csv")
+    # team_data_panel = team_data_panel.cumsum(axis=time_axis).shift(axis=time_axis)  # don't include this week
+    # then do some joining
+
+    #team_data["gameweek"] = team_data.index.whatevs  # TODO
+    
 
     team_pos_data = player_df.groupby(["team_code", "element_type", "gameweek"]).sum()
     team_pos_data.to_csv("team_pos_data.csv")
+
     #player_details.to_csv("player_details.csv")  # store the player names and such so we can inspect them during training/validation
 
 if __name__ == "__main__":
