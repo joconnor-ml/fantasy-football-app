@@ -67,6 +67,12 @@ def transform_data(execution_date, **kwargs):
         
     player_df = pd.concat(player_dfs)
     player_df.to_csv("data.csv")
+
+    team_data = player_df.groupby(["team_code", "gameweek"]).sum()
+    team_data.to_csv("team_data.csv")
+
+    team_pos_data = player_df.groupby(["team_code", "element_type", "gameweek"]).sum()
+    team_pos_data.to_csv("team_pos_data.csv")
     #player_details.to_csv("player_details.csv")  # store the player names and such so we can inspect them during training/validation
 
 if __name__ == "__main__":
