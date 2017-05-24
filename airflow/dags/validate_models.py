@@ -48,13 +48,25 @@ def validate_model(model, model_name):
     rmse = mean_squared_error(ytest, preds) ** 0.5
     logging.info(scores)
     logging.info("RMSE Combo: {}".format(rmse))
+    return ys, preds
 
     
 def validate_models(execution_date, **kwargs):
+    sum_preds = None
     for name, model in model_utils.models.items():
         logging.info(name)
-        validate_model(model, name)
+        ys, preds = validate_model(model, name)
+        preds = np.array(preds)
+        if sum_preds is None:
+            sum_preds = preds
+        else:
+            sum_preds += preds
+    sum_preds = sum_preds / len(model_utils.models)
+    print(sum_preds)
+    print(sum_preds.shape)
         
+    #for y, p in zip(ys, preds):
+    #    print(mean_squared_error(y, p)**0.5)
 
 if __name__ == "__main__":
     import datetime

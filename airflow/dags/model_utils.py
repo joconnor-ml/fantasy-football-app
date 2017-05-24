@@ -7,8 +7,10 @@ from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import make_pipeline, make_union
 from sklearn.decomposition import PCA
+from sklearn.feature_selection import RFECV
 from xgboost import XGBRegressor
 from sklearn_pandas import DataFrameMapper
+from bayesian_models import BayesianPointsRegressor, MeanPointsRegressor
 
 import logging
 
@@ -48,5 +50,13 @@ models = {
     "polynomial":
     make_pipeline(
         Imputer(), PolynomialFeatures(), MinMaxScaler(), PCA(16),  RidgeCV(),
-    )
+    ),
+    "simple_mean":
+    MeanPointsRegressor(),
+    "bayes_global_prior":
+    BayesianPointsRegressor("global"),
+    "bayes_team_prior":
+    BayesianPointsRegressor("team"),
+    "bayes_position_prior":
+    BayesianPointsRegressor("position"),
 }

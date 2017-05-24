@@ -1,4 +1,9 @@
+"""NB: There is some (probably mild) overfitting in here since we are using
+team and position means over the whole training set.
+"""
 from sklearn.base import BaseEstimator
+import pandas as pd
+import numpy as np
 
 # going to do some hand-modelling.
 
@@ -21,14 +26,15 @@ from sklearn.base import BaseEstimator
 # in general, expected score is normally distributed with mu = mean score,
 # sigma = std dev of scores / sqrt(n)
 
-class MeanPointsPredictor(BaseEstimator):
-    def fit(X, y):
-        pass
-    def predict(X):
-        return X["points_per_game"]
+class MeanPointsRegressor(BaseEstimator):
+    def fit(self, X, y):
+        return self
+    
+    def predict(self, X):
+        return X["total_points_mean_all"]
 
-class BayesianPointsPredictor(BaseEstimator):
-    def __init__(self, weight_par=10, prior="global"):
+class BayesianPointsRegressor(BaseEstimator):
+    def __init__(self, prior="global"):
         """Estimator that predicts score as a weighted average of
         some prior expectation and the player's points per game. The weight
         given to points per game is a function of the number of games played
@@ -36,39 +42,42 @@ class BayesianPointsPredictor(BaseEstimator):
         
         arguments
         =========
-        weight_par: float, must be >= 0.
         prior: str, can be one of "global", "team", "position". The player's
         prior points expectation is set to the global mean score, team mean or
         position mean.
         """
-        self.weight_par = weight_par
         self.prior = prior
 
     def _predict(self, X, weight_par):
-        n = X["appearances"]
+        n = X["appearances_sum_all"]
         weight = n / (n + weight_par)
-        return X["points_per_game"] * weight + self.overall_mean * (1 - weight)
-
-    def fit(X, y):
         if self.prior == "global":
-            self.overall_mean = y.mean()
+            prior_score = self.overall_mean
         if self.prior == "team":
-            # find all teammates
-            team_means = y.groupby(X["team_id"]).mean()
-            self.overall_mean = team_means.loc[X["team_id"]]
+            prior_score = pd.merge(X, self.team_means.to_frame(),
+                                   left_on="team_code", right_index=True, how="left")["target"].fillna(self.overall_mean)
+            
+        elif self.prior == "position":
+            prior_score = pd.merge(X, self.position_means.to_frame(),
+                                   left_on="element_type", right_index=True, how="left")["target"].fillna(self.overall_mean)
+        return X["total_points_mean_all"] * weight + prior_score * (1 - weight)
+
+    def fit(self, X, y):
+        self.overall_mean = y.mean()
+        if self.prior == "team":
+            self.team_means = y.groupby(X["team_code"]).mean()
         if self.prior == "position":
-            # find all teammates
-            team_means = y.groupby(X["position_id"]).mean()
-            self.overall_mean = team_means.loc[X["position_id"]]
+            self.position_means = y.groupby(X["element_type"]).mean()
         # grid search over weight par
-        weights = np.logspace(-1, 2, 10)
+        weights = np.logspace(1, 2, 20)
         scores = []
         for weight in weights:
-            preds = _predict(X, weights)
+            preds = self._predict(X, weight)
             scores.append(((preds - y)**2).sum())
         scores = pd.Series(scores, index=weights)
         self.weight_par = scores.idxmin()
+        return self
 
-    def predict(X):
+    def predict(self, X):
         return self._predict(X, self.weight_par)
 
