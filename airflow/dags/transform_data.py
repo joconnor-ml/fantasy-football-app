@@ -123,9 +123,16 @@ def transform_data(execution_date, **kwargs):
     teams = []
     for team in db["teams"].find():
         team["next_opponent"] = team["current_event_fixture"][0]["opponent"]
+        team["next_opponent"] = team["current_event_fixture"][0]["is_home"]
         teams.append(team)
-        teams = pd.DataFrame(teams)
+    teams = pd.DataFrame(teams)
+    teams.index = teams.code
 
+    last_gameweek = player_df["gameweek"].max()
+    last_week_df = player_df.loc[player_df["gameweek"] == last_gameweek]
+    last_week_teams = teams.loc[last_week_df["team_code"]]
+    player_df.loc[player_df["gameweek"] == last_gameweek, "target_team"] = last_week_teams["opponent"]
+    player_df.loc[player_df["gameweek"] == last_gameweek, "target_home"] = last_week_teams["is_home"]
     player_df.to_csv("data.csv")
 
 
