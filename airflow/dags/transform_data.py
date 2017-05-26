@@ -122,8 +122,8 @@ def transform_data(execution_date, **kwargs):
     # need to look up the current fixture data for future predictions
     teams = []
     for team in db["teams"].find():
-        team["next_opponent"] = team["current_event_fixture"][0]["opponent"]
-        team["next_opponent"] = team["current_event_fixture"][0]["is_home"]
+        team["next_opponent"] = team["next_event_fixture"][0]["opponent"]
+        team["is_home"] = team["next_event_fixture"][0]["is_home"]
         teams.append(team)
     teams = pd.DataFrame(teams)
     teams.index = teams.code
@@ -131,8 +131,8 @@ def transform_data(execution_date, **kwargs):
     last_gameweek = player_df["gameweek"].max()
     last_week_df = player_df.loc[player_df["gameweek"] == last_gameweek]
     last_week_teams = teams.loc[last_week_df["team_code"]]
-    player_df.loc[player_df["gameweek"] == last_gameweek, "target_team"] = last_week_teams["opponent"]
-    player_df.loc[player_df["gameweek"] == last_gameweek, "target_home"] = last_week_teams["is_home"]
+    player_df.loc[player_df["gameweek"] == last_gameweek, "target_team"] = last_week_teams["next_opponent"].values
+    player_df.loc[player_df["gameweek"] == last_gameweek, "target_home"] = last_week_teams["is_home"].values.astype(int)
     player_df.to_csv("data.csv")
 
 

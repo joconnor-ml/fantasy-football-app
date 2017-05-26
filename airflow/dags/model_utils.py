@@ -12,7 +12,6 @@ from xgboost import XGBRegressor
 from sklearn_pandas import DataFrameMapper
 from bayesian_models import BayesianPointsRegressor, MeanPointsRegressor
 
-import logging
 
 def get_data(test_week, one_hot):
     df = pd.read_csv("data.csv", index_col=0)
@@ -31,6 +30,7 @@ def get_data(test_week, one_hot):
     if test_week is not None:
         df = df[df["target_minutes"] > 60]
     y = df["target"]
+
     X = df.drop(["target", "id", "target_minutes", "web_name"], axis=1).astype(np.float64)
     if test_week is not None:
         notnull = y.notnull()
