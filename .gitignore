@@ -1,4 +1,6 @@
 airflow/dags/.ipynb_checkpoints
+airflow/dags/models/
+airflow/dags/preds/
 airflow/airflow-webserver.pid
 *#
 *~

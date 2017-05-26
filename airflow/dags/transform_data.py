@@ -25,12 +25,12 @@ def transform_data(execution_date, **kwargs):
         player_df.loc[:, "appearances"] = (player_df.loc[:, "minutes"] > 0).astype(np.float64)
         mean3 = player_df[["total_points", "minutes", "appearances"]].rolling(3).mean()
         mean10 = player_df[["total_points", "minutes", "appearances"]].rolling(10).mean()
-        std10 = player_df[["total_points"]].rolling(10).std()
+        std10 = player_df[["total_points"]].rolling(5).std()
         mean5 = player_df[["total_points", "minutes", "appearances"]].rolling(5).mean()
         ewma = player_df[["total_points", "minutes", "appearances"]].ewm(halflife=10).mean()
         cumulative_sums = player_df.cumsum(axis=0)
         # normalise by number of games played up to now
-        cumulative_means = cumulative_sums[["total_points"]].div(cumulative_sums.loc[:, "appearances"] + 1, axis=0)
+        cumulative_means = cumulative_sums[["total_points", "minutes", "appearances"]].div(cumulative_sums.loc[:, "appearances"] + 1, axis=0)
         player_df["id"] = i + 1
         # join on player details to get position ID, name and team ID.
         player_df = pd.merge(player_df, player_details,
@@ -40,9 +40,6 @@ def transform_data(execution_date, **kwargs):
         player_df["target_home"] = player_df["was_home"].shift(-1)
         player_df["target_team"] = player_df["opponent_team"].shift(-1)
         player_df["gameweek"] = player_df.index
-
-        weight = cumulative_sums["appearances"] / (cumulative_sums["appearances"] + 30)
-        player_df["bayes_global"] = cumulative_means["total_points"] * weight + 3.5 * (1 - weight)
 
         #one_hot = True
         
@@ -56,31 +53,82 @@ def transform_data(execution_date, **kwargs):
 
         player_dfs[i] = pd.concat([
             player_df,
-            mean3.add_suffix("_mean3"),
-            mean5.add_suffix("_mean5"),
-            mean10.add_suffix("_mean10"),
+            (mean3 - cumulative_means).add_suffix("_mean3"),
+            (mean5 - cumulative_means).add_suffix("_mean5"),
+            (mean10 - cumulative_means).add_suffix("_mean10"),
             std10.add_suffix("_std10"),
-            ewma.add_suffix("_ewma"),
+            (ewma - cumulative_means).add_suffix("_ewma"),
             cumulative_means.add_suffix("_mean_all"),
             cumulative_sums.add_suffix("_sum_all"),
         ], axis=1)
-        
+
     player_df = pd.concat(player_dfs)
+
+    team_data = player_df.groupby(["team_code",
+                                   "gameweek"]).sum().reset_index()
+    team_pos_data = player_df.groupby(["team_code", "element_type",
+                                       "gameweek"]).sum().reset_index()
+
+    cumsums = team_data.groupby(["team_code"]).shift().cumsum()
+    cummeans = cumsums.div(cumsums["appearances"], axis=0)
+    cummeans["team_code"] = team_data["team_code"]
+    cummeans["gameweek"] = team_data["gameweek"]
+    player_df = pd.merge(player_df, cummeans[["team_code", "gameweek",
+                                              "total_points"]],
+                         how="left",
+                         on=["team_code", "gameweek"],
+                         suffixes=("", "_team_mean"))
+
+    cumsums = sum(team_data.groupby(["team_code"]).shift(i) for i in range(1,4))
+    cummeans = cumsums.div(cumsums["appearances"], axis=0)
+    cummeans["team_code"] = team_data["team_code"]
+    cummeans["gameweek"] = team_data["gameweek"]
+    player_df = pd.merge(player_df, cummeans[["team_code", "gameweek",
+                                              "total_points"]],
+                         how="left",
+                         on=["team_code", "gameweek"],
+                         suffixes=("", "_team_last3"))
+
+    team_pos_data.to_csv("team_pos_data.csv")
+    cumsums = team_pos_data.groupby(["team_code",
+                                     "element_type"]).shift().cumsum()
+    cummeans = cumsums.div(cumsums["appearances"], axis=0)
+    cummeans["team_code"] = team_pos_data["team_code"]
+    cummeans["element_type"] = team_pos_data["element_type"]
+    cummeans["gameweek"] = team_pos_data["gameweek"]
+    player_df = pd.merge(player_df, cummeans[["team_code", "element_type",
+                                              "gameweek", "total_points"]],
+                         how="left",
+                         on=["team_code", "element_type", "gameweek"],
+                         suffixes=("", "_team_pos_mean"))
+    cumsums = sum(team_pos_data.groupby(["team_code",
+                                         "element_type"]).shift(i) for i in range(1, 4))
+    cummeans = cumsums.div(cumsums["appearances"], axis=0)
+    cummeans["team_code"] = team_pos_data["team_code"]
+    cummeans["element_type"] = team_pos_data["element_type"]
+    cummeans["gameweek"] = team_pos_data["gameweek"]
+    player_df = pd.merge(player_df, cummeans[["team_code", "element_type",
+                                              "gameweek", "total_points"]],
+                         how="left",
+                         on=["team_code", "element_type", "gameweek"],
+                         suffixes=("", "_team_pos_last3"))
+
+    weight = player_df["appearances_sum_all"] / (player_df["appearances_sum_all"] + 30)
+    player_df["bayes_global"] = (player_df["total_points_mean_all"].fillna(3.5) * weight) + (3.5 * (1 - weight))
+    # subtracting bayes_global from the next two to combat multicollinearity
+    player_df["bayes_team"] = (player_df["total_points_team_mean"].fillna(3.5) * weight) + (3.5 * (1 - weight)) - player_df["bayes_global"]
+    player_df["bayes_team_pos"] = (player_df["total_points_team_pos_mean"].fillna(3.5) * weight) + (3.5 * (1 - weight)) - player_df["bayes_global"]
+
+    # need to look up the current fixture data for future predictions
+    teams = []
+    for team in db["teams"].find():
+        team["next_opponent"] = team["current_event_fixture"][0]["opponent"]
+        teams.append(team)
+        teams = pd.DataFrame(teams)
+
     player_df.to_csv("data.csv")
 
-    team_data = player_df.groupby(["team_code", "gameweek"]).sum()
-    # TODO turn this into a panel so we can cumsum up the gameweeks
-    team_data.to_csv("team_data.csv")
-    # team_data_panel = team_data_panel.cumsum(axis=time_axis).shift(axis=time_axis)  # don't include this week
-    # then do some joining
 
-    #team_data["gameweek"] = team_data.index.whatevs  # TODO
-    
-
-    team_pos_data = player_df.groupby(["team_code", "element_type", "gameweek"]).sum()
-    team_pos_data.to_csv("team_pos_data.csv")
-
-    #player_details.to_csv("player_details.csv")  # store the player names and such so we can inspect them during training/validation
 
 if __name__ == "__main__":
     transform_data()
